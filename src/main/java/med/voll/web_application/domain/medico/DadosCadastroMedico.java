@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import med.voll.web_application.domain.usuario.Perfil;
 
 public record DadosCadastroMedico(
         Long id,
@@ -19,4 +20,4 @@ public record DadosCadastroMedico(
         String crm,
         @NotNull
         Especialidade especialidade
-) {}
+        ) {}

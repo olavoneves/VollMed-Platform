@@ -25,7 +25,7 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("O usuário não foi encontrado!"));
     }
 
-    public Long saveUser(String nome,String email, String password) {
+    public Long saveUser(String nome,String email, String password, Perfil perfil) {
         if (nome.isEmpty() || email.isEmpty() || password.isEmpty()) {
             throw new RegraDeNegocioException("Campos não podem ser vazios");
         } else if (usuarioRepository.existsByEmail(email)) {
@@ -35,7 +35,7 @@ public class UsuarioService implements UserDetailsService {
         var passwordHash = passwordEncoder.encode(password);
 
         // método save retorna o objeto que salvou no banco de dados
-        Usuario usuario = usuarioRepository.save(new Usuario(nome, email, passwordHash));
+        Usuario usuario = usuarioRepository.save(new Usuario(nome, email, passwordHash, perfil));
         return usuario.getId();
     }
 

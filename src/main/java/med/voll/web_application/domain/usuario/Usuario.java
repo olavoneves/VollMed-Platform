@@ -35,6 +35,10 @@ public class Usuario implements UserDetails {
         this.senha = senha;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     @Override
     public String getPassword() {
         return senha;

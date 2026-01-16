@@ -32,8 +32,8 @@ public class MedicoService {
         }
 
         if (dados.id() == null) {
-            repository.save(new Medico(dados));
-            usuarioService.saveUser(dados.nome(), dados.email(), dados.crm());
+            Long id = usuarioService.saveUser(dados.nome(), dados.email(), dados.crm());
+            repository.save(new Medico(id, dados));
         } else {
             var medico = repository.findById(dados.id()).orElseThrow();
             medico.atualizarDados(dados);
@@ -48,6 +48,7 @@ public class MedicoService {
     @Transactional
     public void excluir(Long id) {
         repository.deleteById(id);
+        usuarioService.delete(id);
     }
 
     public List<DadosListagemMedico> listarPorEspecialidade(Especialidade especialidade) {

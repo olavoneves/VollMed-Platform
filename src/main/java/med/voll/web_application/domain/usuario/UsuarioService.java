@@ -1,8 +1,5 @@
 package med.voll.web_application.domain.usuario;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import med.voll.web_application.domain.RegraDeNegocioException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,7 +25,7 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("O usuário não foi encontrado!"));
     }
 
-    public void saveUser(String nome,String email, String password) {
+    public Long saveUser(String nome,String email, String password) {
         if (nome.isEmpty() || email.isEmpty() || password.isEmpty()) {
             throw new RegraDeNegocioException("Campos não podem ser vazios");
         } else if (usuarioRepository.existsByEmail(email)) {
@@ -36,6 +33,13 @@ public class UsuarioService implements UserDetailsService {
         }
 
         var passwordHash = passwordEncoder.encode(password);
-        usuarioRepository.save(new Usuario(nome, email, passwordHash));
+
+        // método save retorna o objeto que salvou no banco de dados
+        Usuario usuario = usuarioRepository.save(new Usuario(nome, email, passwordHash));
+        return usuario.getId();
+    }
+
+    public void delete(Long id) {
+        usuarioRepository.deleteById(id);
     }
 }

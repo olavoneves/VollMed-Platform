@@ -56,6 +56,8 @@ public class UsuarioService implements UserDetailsService {
 
         usuarioLogado.alterarSenha(passwordHash);
 
+        usuarioLogado.setSenhaAlterada(true);
+
         usuarioRepository.save(usuarioLogado);
     }
 }

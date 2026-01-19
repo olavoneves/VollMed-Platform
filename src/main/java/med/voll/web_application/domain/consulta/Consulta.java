@@ -18,6 +18,7 @@ public class Consulta {
     @ManyToOne
     @JoinColumn(name = "medico_id")
     private Medico medico;
+
     @ManyToOne
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;

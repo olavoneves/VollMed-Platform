@@ -42,4 +42,20 @@ public class UsuarioService implements UserDetailsService {
     public void delete(Long id) {
         usuarioRepository.deleteById(id);
     }
+
+    public void alterarSenha(DadosAlterarSenha dto, Usuario usuarioLogado) {
+        if (!passwordEncoder.matches(dto.senhaAtual(), usuarioLogado.getPassword())) {
+            throw new RegraDeNegocioException("A senha atual precisa ser igual para poder alterar");
+        }
+
+        if (!dto.novaSenha().equals(dto.novaSenhaConfirmacao())) {
+            throw new RegraDeNegocioException("Nova senha diferente da senha que está em confirmação !");
+        }
+
+        var passwordHash = passwordEncoder.encode(dto.novaSenha());
+
+        usuarioLogado.alterarSenha(passwordHash);
+
+        usuarioRepository.save(usuarioLogado);
+    }
 }

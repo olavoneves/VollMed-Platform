@@ -58,4 +58,8 @@ public class Usuario implements UserDetails {
     public Perfil getPerfil() {
         return perfil;
     }
+
+    public void alterarSenha(String passwordHash) {
+        this.senha = passwordHash;
+    }
 }

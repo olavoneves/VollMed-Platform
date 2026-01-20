@@ -2,6 +2,7 @@ package med.voll.web_application.domain.paciente;
 
 import jakarta.transaction.Transactional;
 import med.voll.web_application.domain.RegraDeNegocioException;
+import med.voll.web_application.domain.usuario.EmailService;
 import med.voll.web_application.domain.usuario.Perfil;
 import med.voll.web_application.domain.usuario.UsuarioService;
 import org.springframework.data.domain.Page;
@@ -15,9 +16,12 @@ public class PacienteService {
 
     private final UsuarioService usuarioService;
 
-    public PacienteService(PacienteRepository repository, UsuarioService usuarioService) {
+    private final EmailService emailService;
+
+    public PacienteService(PacienteRepository repository, UsuarioService usuarioService, EmailService emailService) {
         this.repository = repository;
         this.usuarioService = usuarioService;
+        this.emailService = emailService;
     }
 
     public Page<DadosListagemPaciente> listar(Pageable paginacao) {
@@ -33,6 +37,8 @@ public class PacienteService {
         if (dados.id() == null) {
             Long id = usuarioService.saveUser(dados.nome(), dados.email(), dados.cpf(), Perfil.PACIENTE);
             repository.save(new Paciente(id, dados));
+            emailService.sendEmailForNewPaciente(dados);
+
         } else {
             var paciente = repository.findById(dados.id()).orElseThrow();
             paciente.modificarDados(dados);

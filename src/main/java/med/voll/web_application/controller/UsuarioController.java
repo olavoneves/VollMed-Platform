@@ -22,6 +22,7 @@ public class UsuarioController {
 
     private static final String PAGINA_CADASTRO = "autenticacao/formulario-de-alterar-senha";
     private static final String REDIRECT_HOME = "redirect:home";
+    public static final String FORMULARIO_RECUPERACAO_SENHA = "autenticacao/formulario-recuperacao-senha";
 
     @GetMapping("/login")
     public String carregarLogin(){
@@ -48,6 +49,23 @@ public class UsuarioController {
             model.addAttribute("erro", e.getMessage());
             model.addAttribute("dados", dados);
             return PAGINA_CADASTRO;
+        }
+    }
+
+    @GetMapping("/esqueci-senha")
+    public String carregarEsqueciSenha() {
+        return FORMULARIO_RECUPERACAO_SENHA;
+    }
+
+    @PostMapping("/esqueci-senha")
+    public String sendTokenEmail(@ModelAttribute("email") String email, Model model) {
+        try {
+            usuarioService.sendToken(email);
+            return "redirect:esqueci-senha?verificar";
+
+        } catch (RegraDeNegocioException e){
+            model.addAttribute("erro", e.getMessage());
+            return FORMULARIO_RECUPERACAO_SENHA;
         }
     }
 }

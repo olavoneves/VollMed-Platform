@@ -1,0 +1,2 @@
+ALTER TABLE usuarios
+RENAME COLUMN expiracao_token TO expiration_token

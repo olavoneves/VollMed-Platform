@@ -3,6 +3,8 @@ package med.voll.web_application.domain.usuario;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import med.voll.web_application.domain.RegraDeNegocioException;
+import med.voll.web_application.domain.medico.DadosCadastroMedico;
+import med.voll.web_application.domain.paciente.DadosCadastroPaciente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -51,7 +53,51 @@ public class EmailService {
         enviarEmail(usuario.getUsername(), assunto, conteudo);
     }
 
+    public void sendEmailForNewPaciente(DadosCadastroPaciente paciente) {
+        String title = "Bem Vindo à Clínica Voll Med";
+        String body = buildEmailForNewUser("""
+                Olá [[name]] !! <br>
+                Segue suas informações de login. <br><br>
+                
+                Email: [[email]] <br>
+                Senha: [[senha]] <br>
+                
+                <h3> <a href=\"[[url]]\" target=\"_self\"> ACESSAR SUA CONTA </a> </h3>
+                Não se esqueça de modificar sua senha padrão. <br><br>
+                
+                Conte com nossa equipe para o que precisar, <br>
+                Obrigado <br>
+                Clínica Voll Med.
+                """, paciente.nome(), paciente.email(), paciente.cpf(), URL_SITE);
+
+        enviarEmail(paciente.email(), title, body);
+    }
+
+    public void sendEmailForNewMedico(DadosCadastroMedico medico) {
+        String title = "Bem Vindo à Clínica Voll Med";
+        String body = buildEmailForNewUser("""
+                Olá [[name]] !! <br>
+                Segue suas informações de login. <br><br>
+                
+                Email: [[email]] <br>
+                Senha: [[senha]] <br><br>
+                
+                <h3> <a href=\"[[url]]\" target=\"_self\"> ACESSAR SUA CONTA </a> </h3>
+                Não se esqueça de modificar sua senha padrão. <br>
+                
+                Conte com nossa equipe para o que precisar, <br>
+                Obrigado <br>
+                Clínica Voll Med.
+                """, medico.nome(), medico.email(), medico.crm(), URL_SITE);
+
+        enviarEmail(medico.email(), title, body);
+    }
+
     private String gerarConteudoEmail(String template, String nome, String url) {
         return template.replace("[[name]]", nome).replace("[[URL]]", url);
+    }
+
+    private String buildEmailForNewUser(String template, String name, String email, String password, String url) {
+        return template.replace("[[name]]", name).replace("[[email]]", email).replace("[[senha]]", password).replace("[[url]]", url);
     }
 }

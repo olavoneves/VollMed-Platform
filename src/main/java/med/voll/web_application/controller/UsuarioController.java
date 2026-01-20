@@ -3,6 +3,7 @@ package med.voll.web_application.controller;
 import jakarta.validation.Valid;
 import med.voll.web_application.domain.RegraDeNegocioException;
 import med.voll.web_application.domain.usuario.DadosAlterarSenha;
+import med.voll.web_application.domain.usuario.DadosRecuperacaoConta;
 import med.voll.web_application.domain.usuario.Usuario;
 import med.voll.web_application.domain.usuario.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UsuarioController {
@@ -23,6 +25,7 @@ public class UsuarioController {
     private static final String PAGINA_CADASTRO = "autenticacao/formulario-de-alterar-senha";
     private static final String REDIRECT_HOME = "redirect:home";
     public static final String FORMULARIO_RECUPERACAO_SENHA = "autenticacao/formulario-recuperacao-senha";
+    private static final String FORMULARIO_RECUPERACAO_CONTA = "autenticacao/formulario-recuperacao-conta.html";
 
     @GetMapping("/login")
     public String carregarLogin(){
@@ -66,6 +69,26 @@ public class UsuarioController {
         } catch (RegraDeNegocioException e){
             model.addAttribute("erro", e.getMessage());
             return FORMULARIO_RECUPERACAO_SENHA;
+        }
+    }
+
+    @GetMapping("/recuperar-conta")
+    public String carregarAlterarSenha(@RequestParam(name = "codigo", required = false) String codigo, Model model) {
+        if(codigo != null)
+            model.addAttribute("codigo", codigo);
+
+        return FORMULARIO_RECUPERACAO_CONTA;
+    }
+
+    @PostMapping("/recuperar-conta")
+    public String carregarAlterarSenha(@RequestParam(name = "codigo") String codigo, Model model, DadosRecuperacaoConta dados) {
+        try {
+            usuarioService.recuperarConta(codigo, dados);
+            return "redirect:login";
+
+        } catch (RegraDeNegocioException e){
+            model.addAttribute("error", e.getMessage());
+            return FORMULARIO_RECUPERACAO_CONTA;
         }
     }
 }

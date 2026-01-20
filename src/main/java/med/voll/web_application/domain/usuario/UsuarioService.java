@@ -55,7 +55,7 @@ public class UsuarioService implements UserDetailsService {
         }
 
         if (!dto.novaSenha().equals(dto.novaSenhaConfirmacao())) {
-            throw new RegraDeNegocioException("Nova senha diferente da senha que está em confirmação !");
+            throw new RegraDeNegocioException("Nova senha diferente da senha que está em confirmação!");
         }
 
         var passwordHash = passwordEncoder.encode(dto.novaSenha());
@@ -78,5 +78,25 @@ public class UsuarioService implements UserDetailsService {
 
         //Envia email com token
         emailService.enviarEmailSenha(usuario);
+    }
+
+    public void recuperarConta(String codigo, DadosRecuperacaoConta dados) {
+        Usuario usuario = usuarioRepository.findByTokenIgnoreCase(codigo).orElseThrow(() -> new RegraDeNegocioException("Esse token é diferente do esperado."));
+
+        if (usuario.getExpirationToken().isBefore(LocalDateTime.now())) {
+            throw new RegraDeNegocioException("Token expirado.");
+        }
+
+        if (!dados.novaSenha().equals(dados.novaSenhaConfirmacao())) {
+            throw new RegraDeNegocioException("Nova senha diferente da senha que está em confirmação!");
+        }
+
+        String passwordHash = passwordEncoder.encode(dados.novaSenha());
+        usuario.alterarSenha(passwordHash);
+
+        usuario.setToken(null);
+        usuario.setExpirationToken(null);
+
+        usuarioRepository.save(usuario);
     }
 }
